@@ -39,7 +39,7 @@ def determine_center_and_radius(points, simple_distance=False):
         squared = False
     else:
         squared = True
-    return  minimize(functools.partial(cumulative_distance_from_circle_wraper, squared),
+    return minimize(functools.partial(cumulative_distance_from_circle_wraper, squared=squared),
                     [initialx, initialy, initial_radius], method='nelder-mead',
                    options={'xtol': 1e-8, 'disp': True}).x
     # res1 = minimize(functools.partial(cumulative_distance_from_circle_wraper, squared=True),

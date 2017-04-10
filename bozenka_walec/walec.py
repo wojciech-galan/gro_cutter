@@ -57,7 +57,7 @@ if __name__ == '__main__':
     parser.add_argument('-i', help='input file')
     parser.add_argument('-o', help='output file')
     parser.add_argument('-s', '--solvent', default='TIP3', help='solvent')
-    parser.add_argument('-h', '--skip_hydrogens', default=False, action='store_true',
+    parser.add_argument('--skip_hydrogens', default=False, action='store_true',
                         help='whether to use hydrogens to determine the midddle of the circle and its radius')
     parser.add_argument('-d', '--simple_distance', default=False, action='store_true',
                         help='default distance is square, but you cau use the non-squared one')
@@ -71,7 +71,7 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     data = DatFrame(open(args.i, 'rb').read())
-    data.process(args.h, args.d)
+    data.process(args.skip_hydrogens, args.simple_distance)
     #process_frame(open(args.i).read())
 
     # cont = []
