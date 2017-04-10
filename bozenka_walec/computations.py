@@ -35,6 +35,7 @@ def determine_center_and_radius(points):
     print initialx, initialy, initial_radius
     def cumulative_distance_from_circle_wraper(x, squared):
         return cumulative_distance_from_circle(points, (x[0], x[1]), x[2], squared)
+    # todo optimizer parameters
     res1 = minimize(functools.partial(cumulative_distance_from_circle_wraper, squared=True),
                     [initialx, initialy, initial_radius], method='nelder-mead',
                    options={'xtol': 1e-8, 'disp': True})
@@ -48,7 +49,7 @@ def determine_center_and_radius(points):
     circle2 = plt.Circle((res2.x[0], res2.x[1]), res2.x[2], fill=False, edgecolor='g', label='not squared')
     circle3 = plt.Circle((initialx, initialy), initial_radius, fill=False, edgecolor='c', label='before optimisation')
     fig, ax = plt.subplots()
-    plt.axis([0, 16, 0, 16])
+    plt.axis([0, 16, 0, 16]) #todo poprawić
     ax.add_artist(circle)
     ax.add_artist(circle2)
     ax.add_artist(circle3)

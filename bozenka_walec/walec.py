@@ -44,6 +44,7 @@ def process_frame(frame_string):
 
 
 if __name__ == '__main__':
+    # todo opcja z obejrzeniem nanodysku
     parser = argparse.ArgumentParser(description='todo') # todo
     parser.add_argument('-i', help='input file')
     parser.add_argument('-o', help='output file')
