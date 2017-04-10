@@ -7,6 +7,7 @@
 import math
 import os
 import argparse
+import struct
 import numpy as np
 from string import digits
 from computations import determine_center_and_radius
@@ -15,6 +16,7 @@ from computations import determine_center_and_radius
 AMINOACIDS = set(['GLN', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR',
              'TRP', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
 # POPC TIP3 CLA SOD
+GRO_FORMAT = "5s5s5s5s8s8s8s"
 
 class DatFrame(object):
 
@@ -23,8 +25,14 @@ class DatFrame(object):
         temp = frame_string.strip().split(os.linesep, 2)
         self.first_two_lines = temp[:2]
         content, self.last_line = temp[-1].rsplit(os.linesep, 1)
-        self.lines = [(x[:8].strip(), x[8:15].strip(), x[15:20].strip(), float(x[20:28]), float(x[28:36]), x[36:].strip())
-                      for x in content.split(os.linesep)] #TODO correct it! gro format description
+
+        def process_line(line, line_format=GRO_FORMAT):
+            res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, line)
+            x, y, z = map(float, (x, y, z))
+            res_num, atom_num = map(int, (res_num, atom_num))
+            return res_num, res_name, atom_name, atom_num, x, y, z
+
+        self.lines = [process_line(x) for x in content.split(os.linesep)]
 
     def process(self):
         points = []
@@ -32,6 +40,7 @@ class DatFrame(object):
             if line[0][-3:] in AMINOACIDS:
                 points.append((line[3], line[4]))
         determine_center_and_radius(np.array(points))
+
 
 
 def process_frame(frame_string):
@@ -57,7 +66,7 @@ if __name__ == '__main__':
 
     if not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
-    data = DatFrame(open(args.i).read())
+    data = DatFrame(open(args.i, 'rb').read())
     data.process()
     #process_frame(open(args.i).read())
 
