@@ -11,6 +11,7 @@ import struct
 import numpy as np
 from string import digits
 from computations import determine_center_and_radius
+from computations import distance2d, squared_distance2d
 #            set(['POPC', 'GLN', 'TIP3', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR', 'CLA',
 #            'TRP', 'SOD', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
 AMINOACIDS = set(['GLN', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR',
@@ -35,12 +36,27 @@ class DatFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, skip_hydrogens=False, simple_distance=False):
+    def process(self, to_contain, solvent, main_in_solvent, to_skip, skip_hydrogens=False, simple_distance=False):
         if skip_hydrogens:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
         else:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS]
-        determine_center_and_radius(np.array(protein_atoms))
+        x, y, r = determine_center_and_radius(np.array(protein_atoms))
+        output_lines = []
+        for line in self.lines():
+            if line[1] == to_contain or line[1] in AMINOACIDS:
+                output_lines.append(line)
+            elif line[1] == solvent:
+                # zrobić słownik funkcji dystansowych może... {squared:cośtam, not_squared:cośtam innego
+            # a potem distance = słownik[squared]
+            elif line[1] == to_skip:
+                pass
+            else:
+                import pdb
+                pdb.set_trace()
+                print 'sth went wronq'
+                raise
+
 
 
 def process_frame(frame_string):
@@ -57,6 +73,8 @@ if __name__ == '__main__':
     parser.add_argument('-i', help='input file')
     parser.add_argument('-o', help='output file')
     parser.add_argument('-s', '--solvent', default='TIP3', help='solvent')
+    parser.add_argument('-m', '--main_atom_in_solvent', default='OH2',
+                        help="coordinates of this atom are used as particle's coordinates")
     parser.add_argument('--skip_hydrogens', default=False, action='store_true',
                         help='whether to use hydrogens to determine the midddle of the circle and its radius')
     parser.add_argument('-d', '--simple_distance', default=False, action='store_true',
@@ -71,7 +89,7 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     data = DatFrame(open(args.i, 'rb').read())
-    data.process(args.skip_hydrogens, args.simple_distance)
+    data.process(args.c, args.skip_hydrogens, args.simple_distance)
     #process_frame(open(args.i).read())
 
     # cont = []
