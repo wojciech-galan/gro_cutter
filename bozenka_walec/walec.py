@@ -30,17 +30,17 @@ class DatFrame(object):
             res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, line)
             x, y, z = map(float, (x, y, z))
             res_num, atom_num = map(int, (res_num, atom_num))
+            res_name, atom_name = map(str.strip, (res_name, atom_name))
             return res_num, res_name, atom_name, atom_num, x, y, z
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self):
-        points = []
-        for line in self.lines:
-            if line[0][-3:] in AMINOACIDS:
-                points.append((line[3], line[4]))
-        determine_center_and_radius(np.array(points))
-
+    def process(self, skip_hydrogens=False, simple_distance=False):
+        if skip_hydrogens:
+            protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
+        else:
+            protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS]
+        determine_center_and_radius(np.array(protein_atoms))
 
 
 def process_frame(frame_string):
@@ -57,17 +57,21 @@ if __name__ == '__main__':
     parser.add_argument('-i', help='input file')
     parser.add_argument('-o', help='output file')
     parser.add_argument('-s', '--solvent', default='TIP3', help='solvent')
+    parser.add_argument('-h', '--skip_hydrogens', default=False, action='store_true',
+                        help='whether to use hydrogens to determine the midddle of the circle and its radius')
+    parser.add_argument('-d', '--simple_distance', default=False, action='store_true',
+                        help='default distance is square, but you cau use the non-squared one')
     parser.add_argument('-k', '--skip', action='append', help='particles to skip')
     parser.add_argument('-c', '--contain', default='POPC',
-                        help='particles to be contained in the output file without changes. '
-                             'AminoAcis are always contained')
+                        help='''particles to be contained in the output file without changes.
+                        AminoAcids are always contained''')
     args = parser.parse_args()
     print args
 
     if not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     data = DatFrame(open(args.i, 'rb').read())
-    data.process()
+    data.process(args.h, args.d)
     #process_frame(open(args.i).read())
 
     # cont = []
