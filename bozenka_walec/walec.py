@@ -1,22 +1,15 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-# jony wywalić, woda to tip3
-# NANODYSK W PŁASZCZYŹNIE xy
-
-import math
 import os
 import argparse
 import struct
 import numpy as np
-from string import digits
 from computations import determine_center_and_radius
 from computations import squared_distance2d
-#            set(['POPC', 'GLN', 'TIP3', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR', 'CLA',
-#            'TRP', 'SOD', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
+
 AMINOACIDS = set(['GLN', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR',
              'TRP', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
-# POPC TIP3 CLA SOD
 GRO_FORMAT = "5s5s5s5s8s8s8s"
 GRO_FORMAT_C = "%5d%-5s%5s%5d%8.3f%8.3f%8.3f"
 
@@ -37,11 +30,7 @@ class DatFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, to_contain, solvent, main_in_solvent, to_skip, skip_hydrogens, outfile): #todo remove skip
-
-        def process_line(line, line_format=GRO_FORMAT_C):
-            return GRO_FORMAT_C %line
-
+    def process(self, to_contain, solvent, main_in_solvent, to_skip, skip_hydrogens): #todo remove skip
         if skip_hydrogens:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
         else:
@@ -63,22 +52,20 @@ class DatFrame(object):
                         control = False
                 elif control:
                     output_lines.append(line)
-            # elif line[1] in to_skip:
-            #     pass
-            # else:
-            #     import pdb
-            #     pdb.set_trace()
-            #     print 'sth went wronq'
-            #     raise
-        if not os.path.exists(os.path.dirname(outfile)):
-            os.makedirs(os.path.dirname(outfile))
-        with open(outfile, 'w') as f:
-            f.write(os.linesep.join(self.first_two_lines))
-            f.write(os.linesep)
-            f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in output_lines))
-            f.write(os.linesep)
-            f.write(self.last_line)
+        return output_lines
 
+
+def write_file(first_two_lines, lines, last_line, outfile):
+    def process_line(line, line_format=GRO_FORMAT_C):
+        return line_format % line
+    if not os.path.exists(os.path.dirname(outfile)):
+        os.makedirs(os.path.dirname(outfile))
+    with open(outfile, 'w') as f:
+        f.write(os.linesep.join(first_two_lines))
+        f.write(os.linesep)
+        f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in lines))
+        f.write(os.linesep)
+        f.write(last_line)
 
 
 def process_frame(frame_string):
@@ -106,11 +93,9 @@ if __name__ == '__main__':
                         AminoAcids are always contained''')
     args = parser.parse_args()
     print args
+    import time
+    t = time.time()
     data = DatFrame(open(args.i, 'rb').read())
-    data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens, args.o)
-    #process_frame(open(args.i).read())
-
-    # cont = []
-    # for line in open('data/ramka.gro').readlines()[2:-1]:
-    #     cont.append(line.split(None, 1)[0].translate(None, digits))
-    # print set(cont)
+    lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens)
+    write_file(data.first_two_lines, lines, data.last_line, args.o)
+    print time.time() - t
