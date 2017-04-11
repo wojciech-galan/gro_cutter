@@ -17,29 +17,23 @@ def squared_distance2d((x1, y1), (x2, y2)):
     return (x1 - x2) ** 2 + (y1 - y2) ** 2
 
 
-def distance_from_circle(point, center, radius, squared=True):
+def distance_from_circle(point, center, radius):
     '''Computes distance between point and a circle'''
-    if squared:
-        return math.fabs(radius**2-squared_distance2d(point, center))
-    return math.fabs(radius - distance2d(point, center))
+    return math.fabs(radius**2-squared_distance2d(point, center))
 
 
-def cumulative_distance_from_circle(points, center, radius, squared):
-    return sum(distance_from_circle(point, center, radius, squared) for point in points)
+def cumulative_distance_from_circle(points, center, radius):
+    return sum(distance_from_circle(point, center, radius) for point in points)
 
 
-def determine_center_and_radius(points, simple_distance=False):
+def determine_center_and_radius(points):
     initialx = np.mean(points[:,0])
     initialy = np.mean(points[:,1])
     initial_radius = (math.fabs(initialx) + math.fabs(initialy) - np.min(points[:,0]) - np.min(points[:,1]))/2
     print initialx, initialy, initial_radius
-    def cumulative_distance_from_circle_wraper(x, squared):
-        return cumulative_distance_from_circle(points, (x[0], x[1]), x[2], squared)
-    if simple_distance:
-        squared = False
-    else:
-        squared = True
-    return minimize(functools.partial(cumulative_distance_from_circle_wraper, squared=squared),
+    def cumulative_distance_from_circle_wraper(x):
+        return cumulative_distance_from_circle(points, (x[0], x[1]), x[2])
+    return minimize(functools.partial(cumulative_distance_from_circle_wraper),
                     [initialx, initialy, initial_radius], method='nelder-mead',
                    options={'xtol': 1e-8, 'disp': True}).x
     # res1 = minimize(functools.partial(cumulative_distance_from_circle_wraper, squared=True),
