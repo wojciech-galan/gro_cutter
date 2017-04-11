@@ -22,7 +22,7 @@ class DataFrame(object):
     def __init__(self, frame_string):
         super(DataFrame, self).__init__()
         temp = frame_string.strip().split(os.linesep, 2)
-        self.first_two_lines = temp[:2]
+        self.first_line = temp[0]
         content, self.last_line = temp[-1].rsplit(os.linesep, 1)
 
         def process_line(line, line_format=GRO_FORMAT):
@@ -59,13 +59,15 @@ class DataFrame(object):
         return output_lines
 
 
-def write_file(first_two_lines, lines, last_line, outfile):
+def write_file(first_line, lines, last_line, outfile):
     def process_line(line, line_format=GRO_FORMAT_C):
         return line_format % line
     with open(outfile, 'a') as f:
-        f.write(os.linesep.join(first_two_lines))
+        f.write(first_line)
         f.write(os.linesep)
-        f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in lines))
+        f.write(str(len(lines)))
+        f.write(os.linesep)
+        f.write(os.linesep.join(process_line(line) for line in lines))
         f.write(os.linesep)
         f.write(last_line)
 
@@ -104,8 +106,8 @@ if __name__ == '__main__':
     # found = re.search(FRAME_PATTERN, s, re.DOTALL)
     # print found.end()
     # raise
-    get_frames(args.i)
-    raise
+    # get_frames(args.i)
+    # raise
     if not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     open(args.o, 'w').close() # create empty file
@@ -114,5 +116,5 @@ if __name__ == '__main__':
     t = time.time()
     data = DataFrame(open(args.i, 'rb').read())
     lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens)
-    write_file(data.first_two_lines, lines, data.last_line, args.o)
+    write_file(data.first_line, lines, data.last_line, args.o)
     print time.time() - t
