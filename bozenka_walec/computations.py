@@ -30,12 +30,15 @@ def determine_center_and_radius(points):
     initialx = np.mean(points[:,0])
     initialy = np.mean(points[:,1])
     initial_radius = (math.fabs(initialx) + math.fabs(initialy) - np.min(points[:,0]) - np.min(points[:,1]))/2
-    print initialx, initialy, initial_radius
     def cumulative_distance_from_circle_wraper(x):
         return cumulative_distance_from_circle(points, (x[0], x[1]), x[2])
+    from scipy.optimize import least_squares
+    return least_squares(functools.partial(cumulative_distance_from_circle_wraper),
+                         [initialx, initialy, initial_radius],
+                         xtol=1e-8).x
     return minimize(functools.partial(cumulative_distance_from_circle_wraper),
-                    [initialx, initialy, initial_radius], method='nelder-mead',
-                   options={'xtol': 1e-8, 'disp': True}).x
+                    [initialx, initialy, initial_radius], method='nelder-mead', #method='nelder-mead',
+                   options={'xtol': 1e-8}).x
     # res1 = minimize(functools.partial(cumulative_distance_from_circle_wraper, squared=True),
     #                 [initialx, initialy, initial_radius], method='nelder-mead',
     #                options={'xtol': 1e-8, 'disp': True})
