@@ -75,7 +75,7 @@ class DatFrame(object):
         with open(outfile, 'w') as f:
             f.write(os.linesep.join(self.first_two_lines))
             f.write(os.linesep)
-            f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in self.lines))
+            f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in output_lines))
             f.write(os.linesep)
             f.write(self.last_line)
 
