@@ -11,13 +11,14 @@ import struct
 import numpy as np
 from string import digits
 from computations import determine_center_and_radius
-from computations import distance2d, squared_distance2d
+from computations import squared_distance2d
 #            set(['POPC', 'GLN', 'TIP3', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR', 'CLA',
 #            'TRP', 'SOD', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
 AMINOACIDS = set(['GLN', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR',
              'TRP', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
 # POPC TIP3 CLA SOD
 GRO_FORMAT = "5s5s5s5s8s8s8s"
+GRO_FORMAT_C = "%5d%-5s%5s%5d%8.3f%8.3f%8.3f"
 
 class DatFrame(object):
 
@@ -36,26 +37,47 @@ class DatFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, to_contain, solvent, main_in_solvent, to_skip, skip_hydrogens=False, simple_distance=False):
+    def process(self, to_contain, solvent, main_in_solvent, to_skip, skip_hydrogens, outfile): #todo remove skip
+
+        def process_line(line, line_format=GRO_FORMAT_C):
+            return GRO_FORMAT_C %line
+
         if skip_hydrogens:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
         else:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS]
         x, y, r = determine_center_and_radius(np.array(protein_atoms))
+        center = (x, y)
+        sqared_r = r**2
         output_lines = []
-        for line in self.lines():
+        control = False
+        for line in self.lines:
             if line[1] == to_contain or line[1] in AMINOACIDS:
                 output_lines.append(line)
-            elif line[1] == solvent:
-                # zrobić słownik funkcji dystansowych może... {squared:cośtam, not_squared:cośtam innego
-            # a potem distance = słownik[squared]
-            elif line[1] == to_skip:
-                pass
-            else:
-                import pdb
-                pdb.set_trace()
-                print 'sth went wronq'
-                raise
+            elif line[1] == solvent :
+                if line[2] == main_in_solvent:
+                    if squared_distance2d(center, (line[4], line[5])) <= sqared_r:
+                        output_lines.append(line)
+                        control = True
+                    else:
+                        control = False
+                elif control:
+                    output_lines.append(line)
+            # elif line[1] in to_skip:
+            #     pass
+            # else:
+            #     import pdb
+            #     pdb.set_trace()
+            #     print 'sth went wronq'
+            #     raise
+        if not os.path.exists(os.path.dirname(outfile)):
+            os.makedirs(os.path.dirname(outfile))
+        with open(outfile, 'w') as f:
+            f.write(os.linesep.join(self.first_two_lines))
+            f.write(os.linesep)
+            f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in self.lines))
+            f.write(os.linesep)
+            f.write(self.last_line)
 
 
 
@@ -78,19 +100,14 @@ if __name__ == '__main__':
                         help="coordinates of this atom are used as particle's coordinates")
     parser.add_argument('--skip_hydrogens', default=False, action='store_true',
                         help='whether to use hydrogens to determine the midddle of the circle and its radius')
-    parser.add_argument('-d', '--simple_distance', default=False, action='store_true',
-                        help='default distance is square, but you cau use the non-squared one')
     parser.add_argument('-k', '--skip', action='append', help='particles to skip')
     parser.add_argument('-c', '--contain', default='POPC',
                         help='''particles to be contained in the output file without changes.
                         AminoAcids are always contained''')
     args = parser.parse_args()
     print args
-
-    if not os.path.exists(os.path.dirname(args.o)):
-        os.makedirs(os.path.dirname(args.o))
     data = DatFrame(open(args.i, 'rb').read())
-    data.process(args.c, args.skip_hydrogens, args.simple_distance)
+    data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens, args.o)
     #process_frame(open(args.i).read())
 
     # cont = []
