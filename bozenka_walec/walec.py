@@ -58,23 +58,12 @@ class DatFrame(object):
 def write_file(first_two_lines, lines, last_line, outfile):
     def process_line(line, line_format=GRO_FORMAT_C):
         return line_format % line
-    if not os.path.exists(os.path.dirname(outfile)):
-        os.makedirs(os.path.dirname(outfile))
-    with open(outfile, 'w') as f:
+    with open(outfile, 'a') as f:
         f.write(os.linesep.join(first_two_lines))
         f.write(os.linesep)
         f.write(os.linesep.join(process_line(line, GRO_FORMAT) for line in lines))
         f.write(os.linesep)
         f.write(last_line)
-
-
-def process_frame(frame_string):
-    temp = frame_string.strip().split(os.linesep, 2)
-    first_two_lines = temp[:2]
-    last_line = temp[-1].rsplit(os.linesep, 1)[1]
-    print first_two_lines
-    print last_line
-    print [temp[2][:30]]
 
 
 if __name__ == '__main__':
@@ -90,8 +79,11 @@ if __name__ == '__main__':
     parser.add_argument('-k', '--skip', action='append', help='particles to skip')
     parser.add_argument('-c', '--contain', default='POPC',
                         help='''particles to be contained in the output file without changes.
-                        AminoAcids are always contained''')
+                        AminoAcids are always rewriten to the output file''')
     args = parser.parse_args()
+    if not os.path.exists(os.path.dirname(args.o)):
+        os.makedirs(os.path.dirname(args.o))
+    open(args.o, 'w').close() # create empty file
     print args
     import time
     t = time.time()
