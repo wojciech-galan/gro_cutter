@@ -136,7 +136,7 @@ if __name__ == '__main__':
                         AminoAcids are always rewriten to the output file''')
     args = parser.parse_args()
     # print len(open(args.i).read())
-    # s = open('data/ramki.gro').read()
+    # s = open('data/ramki.gros').read()
     # import re
     # found = re.search(FRAME_PATTERN, s, re.DOTALL)
     # print found.end()
@@ -146,7 +146,7 @@ if __name__ == '__main__':
     if not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     open(args.o, 'w').close() # create empty file
-    for frame in get_frames('data/ramki.gro'):
+    for frame in get_frames(args.i):
         print '--------------------------'
         ti = time.time()
         data = DataFrame(frame)
