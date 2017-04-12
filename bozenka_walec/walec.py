@@ -5,6 +5,7 @@ import os
 import argparse
 import struct
 import re
+import time
 import numpy as np
 from computations import determine_center_and_radius
 from computations import squared_distance2d
@@ -109,12 +110,14 @@ def get_frames(fname, pattern=re.compile(FRAME_PATTERN+FRAME_PATTERN_PLUS, re.DO
         # main loop
         while f.tell() < file_size - 2: # -2 for /n in unix or /r/n in windows - the characters could be found on the
                                         # end on the file
+            t = time.time()
             s += f.read(read_size)
             found = re.search(pattern, s)
             while not found and f.tell() < file_size:
                 s += f.read(read_size)
                 found = re.search(pattern, s)
             if f.tell() < file_size: # works for every - but the last -frame
+                print time.time() - t
                 yield s[:found.end()-diff]
                 s = s[found.end()-diff:]
                 found = False
@@ -145,7 +148,6 @@ if __name__ == '__main__':
     # found = re.search(FRAME_PATTERN, s, re.DOTALL)
     # print found.end()
     # raise
-    import time
     t = time.time()
     if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
