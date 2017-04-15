@@ -30,9 +30,13 @@ class DataFrame(object):
 
         def process_line(line, line_format=GRO_FORMAT):
             res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, line)
-            x, y, z = map(float, (x, y, z))
-            res_num, atom_num = map(int, (res_num, atom_num))
-            res_name, atom_name = map(str.strip, (res_name, atom_name))
+            res_num = int(res_num)
+            atom_num = int(atom_num)
+            res_name = res_name.rstrip()
+            atom_name = atom_name.lstrip()
+            x = float(x)
+            y = float(y)
+            z = float(z)
             return res_num, res_name, atom_name, atom_num, x, y, z
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
