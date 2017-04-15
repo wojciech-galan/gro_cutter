@@ -27,7 +27,6 @@ def cumulative_distance_from_circle(points, center, radius):
 
 
 def determine_center_and_radius(points, xtol, initialx=None, initialy=None, initial_radius=None):
-    print [xtol]
     if initialx is None:
         initialx = np.mean(points[:,0])
     if initialy is None:
