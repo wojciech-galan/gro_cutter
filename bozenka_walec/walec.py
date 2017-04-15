@@ -117,7 +117,7 @@ def get_frames(fname, pattern=re.compile(FRAME_PATTERN+FRAME_PATTERN_PLUS, re.DO
                 s += f.read(read_size)
                 found = re.search(pattern, s)
             if f.tell() < file_size: # works for every - but the last -frame
-                print time.time() - t
+                print time.time() - t, "reading"
                 yield s[:found.end()-diff]
                 s = s[found.end()-diff:]
                 found = False
@@ -156,13 +156,13 @@ if __name__ == '__main__':
         print '--------------------------'
         ti = time.time()
         data = DataFrame(frame)
-        print time.time() -ti
+        print time.time() -ti, "constructing frame object"
         ti = time.time()
         lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens)
-        print time.time() -ti
+        print time.time() -ti, "processing data"
         ti=time.time()
         write_file(data.first_line, lines, data.last_line, args.o)
-        print time.time() -ti
+        print time.time() -ti, "writing data"
 
     print time.time()-t
     raise
