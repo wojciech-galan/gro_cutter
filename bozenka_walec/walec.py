@@ -4,7 +4,6 @@
 import os
 import argparse
 import struct
-import re
 import time
 import numpy as np
 from computations import determine_center_and_radius
@@ -41,12 +40,12 @@ class DataFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, x, y, r):
+    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, xtol, x, y, r):
         if skip_hydrogens:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
         else:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS]
-        x, y, r = determine_center_and_radius(np.array(protein_atoms), x, y, r)
+        x, y, r = determine_center_and_radius(np.array(protein_atoms), xtol, x, y, r)
         center = (x, y)
         sqared_r = r**2
         output_lines = []
@@ -141,6 +140,9 @@ if __name__ == '__main__':
     parser.add_argument('-c', '--contain', default='POPC',
                         help='''particles to be contained in the output file without changes.
                         AminoAcids are always rewriten to the output file''')
+    parser.add_argument('--xtol', default=1e-8, type=float, help='xtol parameter of the scipy.optimize.least_squares \
+                        function used for fitting a circle to the protein atoms. The lower, the more time will it take \
+                        to complete the computations.')
     args = parser.parse_args()
     # print len(open(args.i).read())
     # s = open('data/ramki.gros').read()
@@ -162,7 +164,7 @@ if __name__ == '__main__':
         print time.time() -ti, "constructing frame object"
         ti = time.time()
         lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
-                                      x, y, r)
+                                      args.xtol, x, y, r)
         print time.time() -ti, "processing data"
         ti=time.time()
         write_file(data.first_line, lines, data.last_line, args.o)
