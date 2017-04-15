@@ -39,12 +39,12 @@ class DataFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens):
+    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, x, y, r):
         if skip_hydrogens:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
         else:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS]
-        x, y, r = determine_center_and_radius(np.array(protein_atoms))
+        x, y, r = determine_center_and_radius(np.array(protein_atoms), x, y, r)
         center = (x, y)
         sqared_r = r**2
         output_lines = []
@@ -61,7 +61,7 @@ class DataFrame(object):
                         control = False
                 elif control:
                     output_lines.append(line)
-        return output_lines
+        return output_lines, x, y, r
 
 
 def write_file(first_line, lines, last_line, outfile):
@@ -151,13 +151,15 @@ if __name__ == '__main__':
     if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     open(args.o, 'w').close() # create empty file
+    x, y, r = None, None, None # initial values
     for frame in get_frames(args.i):
         print '--------------------------'
         ti = time.time()
         data = DataFrame(frame)
         print time.time() -ti, "constructing frame object"
         ti = time.time()
-        lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens)
+        lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
+                                      x, y, r)
         print time.time() -ti, "processing data"
         ti=time.time()
         write_file(data.first_line, lines, data.last_line, args.o)

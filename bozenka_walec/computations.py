@@ -26,10 +26,13 @@ def cumulative_distance_from_circle(points, center, radius):
     return sum(distance_from_circle(point, center, radius) for point in points)
 
 
-def determine_center_and_radius(points):
-    initialx = np.mean(points[:,0])
-    initialy = np.mean(points[:,1])
-    initial_radius = (math.fabs(initialx) + math.fabs(initialy) - np.min(points[:,0]) - np.min(points[:,1]))/2
+def determine_center_and_radius(points, initialx=None, initialy=None, initial_radius=None):
+    if initialx is None:
+        initialx = np.mean(points[:,0])
+    if initialy is None:
+        initialy = np.mean(points[:,1])
+    if initial_radius is None:
+        initial_radius = (math.fabs(initialx) + math.fabs(initialy) - np.min(points[:,0]) - np.min(points[:,1]))/2
     def cumulative_distance_from_circle_wraper(x):
         return cumulative_distance_from_circle(points, (x[0], x[1]), x[2])
     from scipy.optimize import least_squares
