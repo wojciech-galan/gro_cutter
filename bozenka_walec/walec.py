@@ -30,7 +30,7 @@ class DataFrame(object):
         self.first_line = temp[0]
         content, self.last_line = temp[-1].rsplit(os.linesep, 1)
 
-        def process_line(line, line_format=GRO_FORMAT): #tu już mogę te rzeczy, które są potem skipowane, opuszczać
+        def process_line(line, line_format=GRO_FORMAT):
             res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, line)
             x, y, z = map(float, (x, y, z))
             res_num, atom_num = map(int, (res_num, atom_num))
@@ -39,7 +39,7 @@ class DataFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, to_contain, solvent, main_in_solvent, to_skip, skip_hydrogens): #todo remove skip
+    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens):
         if skip_hydrogens:
             protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
         else:
@@ -137,7 +137,6 @@ if __name__ == '__main__':
                         help="coordinates of this atom are used as particle's coordinates")
     parser.add_argument('--skip_hydrogens', default=False, action='store_true',
                         help='whether to use hydrogens to determine the midddle of the circle and its radius')
-    parser.add_argument('-k', '--skip', action='append', help='particles to skip')
     parser.add_argument('-c', '--contain', default='POPC',
                         help='''particles to be contained in the output file without changes.
                         AminoAcids are always rewriten to the output file''')
@@ -158,7 +157,7 @@ if __name__ == '__main__':
         data = DataFrame(frame)
         print time.time() -ti, "constructing frame object"
         ti = time.time()
-        lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens)
+        lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens)
         print time.time() -ti, "processing data"
         ti=time.time()
         write_file(data.first_line, lines, data.last_line, args.o)
