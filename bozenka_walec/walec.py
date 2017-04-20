@@ -5,6 +5,7 @@ import os
 import argparse
 import struct
 import time
+import multiprocessing
 import numpy as np
 from computations import determine_center_and_radius
 from computations import squared_distance2d
@@ -125,7 +126,15 @@ def get_frames(fname, pattern=PATTERN, start=1):
                 yield s
 
 
-
+def process_frame_string((frame_string, x, y, r)):
+    ti = time.time()
+    data = DataFrame(frame_string)
+    print time.time() - ti, "constructing frame object"
+    ti = time.time()
+    lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
+                                  args.xtol, x, y, r)
+    print time.time() - ti, "processing data"
+    return data, lines, x, y, r
 
 if __name__ == '__main__':
     # todo opcja z obejrzeniem nanodysku
@@ -143,6 +152,8 @@ if __name__ == '__main__':
     parser.add_argument('--xtol', default=1e-8, type=float, help='xtol parameter of the scipy.optimize.least_squares \
                         function used for fitting a circle to the protein atoms. The lower, the more time will it take \
                         to complete the computations.')
+    parser.add_argument('-p', '--processes', default=0, type=int, help="Number of additional cores used for \
+                        computations. Values >=2 and <=num_of_available_cores are reasonable")
     args = parser.parse_args()
     # print len(open(args.i).read())
     # s = open('data/ramki.gros').read()
@@ -150,25 +161,42 @@ if __name__ == '__main__':
     # found = re.search(FRAME_PATTERN, s, re.DOTALL)
     # print found.end()
     # raise
+    print "Num of cores:", 1 or args.processes
     t = time.time()
     if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
     open(args.o, 'w').close() # create empty file
     x, y, r = None, None, None # initial values
-    for frame in get_frames(args.i):
-        print '--------------------------'
-        print frame.split(os.linesep, 1)[0]
-        print frame.rsplit(os.linesep, 1)[1]
-        ti = time.time()
-        data = DataFrame(frame)
-        print time.time() -ti, "constructing frame object"
-        ti = time.time()
-        lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
-                                      args.xtol, x, y, r)
-        print time.time() -ti, "processing data"
-        ti=time.time()
-        write_file(data.first_line, lines, data.last_line, args.o)
-        print time.time() -ti, "writing data"
+
+    if args.processes:
+        pool = multiprocessing.Pool(processes=args.processes)
+        iterator = get_frames(args.i)
+        n = next(iterator, False)
+        while n:
+            map_args = []
+            for x in range(args.processes):
+                n = next(iterator, False)
+                if n:
+                    map_args.append((n, x, y, r))
+            for data, lines, x, y, r in pool.map(process_frame_string, map_args):
+                ti = time.time()
+                write_file(data.first_line, lines, data.last_line, args.o)
+                print time.time() - ti, "writing data"
+
+        pool.close()
+        pool.join()
+    else:
+        for frame in get_frames(args.i):
+            ti = time.time()
+            data = DataFrame(frame)
+            print time.time() -ti, "constructing frame object"
+            ti = time.time()
+            lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
+                                          args.xtol, x, y, r)
+            print time.time() -ti, "processing data"
+            ti=time.time()
+            write_file(data.first_line, lines, data.last_line, args.o)
+            print time.time() -ti, "writing data"
 
     print time.time()-t
     raise
