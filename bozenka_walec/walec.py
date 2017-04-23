@@ -161,7 +161,7 @@ if __name__ == '__main__':
     # found = re.search(FRAME_PATTERN, s, re.DOTALL)
     # print found.end()
     # raise
-    print "Num of cores:", 1 or args.processes
+    print "Num of cores:", 1 and args.processes
     t = time.time()
     if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
         os.makedirs(os.path.dirname(args.o))
