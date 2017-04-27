@@ -171,7 +171,7 @@ if __name__ == '__main__':
     if args.processes:
         pool = multiprocessing.Pool(processes=args.processes)
         iterator = get_frames(args.i)
-        n = next(iterator, False)
+        n = True
         while n:
             map_args = []
             for x in range(args.processes):
