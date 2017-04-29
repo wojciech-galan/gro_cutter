@@ -4,7 +4,6 @@
 import os
 import argparse
 import struct
-import time
 import multiprocessing
 import numpy as np
 from computations import determine_center_and_radius
@@ -111,14 +110,12 @@ def get_frames(fname, pattern=PATTERN, start=1):
         # main loop
         while f.tell() < file_size - 2: # -2 for /n in unix or /r/n in windows - the characters could be found on the
                                         # end on the file
-            t = time.time()
             s += f.read(read_size)
             found = s.find(pattern, start)
             while found < 0 and f.tell() < file_size:
                 s += f.read(read_size)
                 found = s.find(pattern, start)
             if f.tell() < file_size: # works for every - but the last -frame
-                print time.time() - t, "reading"
                 yield s[:found].strip()
                 s = s[found:]
                 found = False
@@ -126,85 +123,17 @@ def get_frames(fname, pattern=PATTERN, start=1):
                 yield s
 
 
-def process_frame_string((frame_string, x, y, r)):
-    ti = time.time()
+def process_frame_string((frame_string, x, y, r, contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol)):
     data = DataFrame(frame_string)
-    print time.time() - ti, "constructing frame object"
-    ti = time.time()
-    lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
-                                  args.xtol, x, y, r)
-    print time.time() - ti, "processing data"
+    lines, x, y, r = data.process(contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol, x, y, r)
     return data, lines, x, y, r
 
 if __name__ == '__main__':
-    # todo opcja z obejrzeniem nanodysku
-    parser = argparse.ArgumentParser(description='todo') # todo
-    parser.add_argument('-i', help='input file')
-    parser.add_argument('-o', help='output file')
-    parser.add_argument('-s', '--solvent', default='TIP3', help='solvent')
-    parser.add_argument('-m', '--main_atom_in_solvent', default='OH2',
-                        help="coordinates of this atom are used as particle's coordinates")
-    parser.add_argument('--skip_hydrogens', default=False, action='store_true',
-                        help='whether to use hydrogens to determine the midddle of the circle and its radius')
-    parser.add_argument('-c', '--contain', default='POPC',
-                        help='''particles to be contained in the output file without changes.
-                        AminoAcids are always rewriten to the output file''')
-    parser.add_argument('--xtol', default=1e-8, type=float, help='xtol parameter of the scipy.optimize.least_squares \
-                        function used for fitting a circle to the protein atoms. The lower, the more time will it take \
-                        to complete the computations.')
-    parser.add_argument('-p', '--processes', default=0, type=int, help="Number of additional cores used for \
-                        computations. Values >=2 and <=num_of_available_cores are reasonable")
-    args = parser.parse_args()
-    # print len(open(args.i).read())
-    # s = open('data/ramki.gros').read()
-    # import re
-    # found = re.search(FRAME_PATTERN, s, re.DOTALL)
-    # print found.end()
-    # raise
-    print "Num of cores:", 1 and args.processes
-    t = time.time()
-    if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
-        os.makedirs(os.path.dirname(args.o))
-    open(args.o, 'w').close() # create empty file
-    x, y, r = None, None, None # initial values
-
-    if args.processes:
-        pool = multiprocessing.Pool(processes=args.processes)
-        iterator = get_frames(args.i)
-        n = True
-        while n:
-            map_args = []
-            for x in range(args.processes):
-                n = next(iterator, False)
-                if n:
-                    map_args.append((n, x, y, r))
-            for data, lines, x, y, r in pool.map(process_frame_string, map_args):
-                ti = time.time()
-                write_file(data.first_line, lines, data.last_line, args.o)
-                print time.time() - ti, "writing data"
-
-        pool.close()
-        pool.join()
-    else:
-        for frame in get_frames(args.i):
-            ti = time.time()
-            data = DataFrame(frame)
-            print time.time() -ti, "constructing frame object"
-            ti = time.time()
-            lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
-                                          args.xtol, x, y, r)
-            print time.time() -ti, "processing data"
-            ti=time.time()
-            write_file(data.first_line, lines, data.last_line, args.o)
-            print time.time() -ti, "writing data"
-
-    print time.time()-t
-    raise
-
-    print args
-    import time
-    t = time.time()
-    data = DataFrame(open(args.i, 'rb').read())
-    lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens)
-    write_file(data.first_line, lines, data.last_line, args.o)
-    print time.time() - t
+    pass
+    # print args
+    # import time
+    # t = time.time()
+    # data = DataFrame(open(args.i, 'rb').read())
+    # lines = data.process(args.contain, args.solvent, args.main_atom_in_solvent, set(args.skip), args.skip_hydrogens)
+    # write_file(data.first_line, lines, data.last_line, args.o)
+    # print time.time() - t
