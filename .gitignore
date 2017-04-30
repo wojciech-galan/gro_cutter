@@ -98,3 +98,9 @@ ENV/
 
 # mkdocs documentation
 /site
+
+# Pycharm-specific files
+.idea/
+
+# results directory
+results/
