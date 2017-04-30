@@ -20,6 +20,6 @@ def plot(points, initialx, initialy, initial_radius, x, y, radius): #TODO outfil
     plt.axis([0, 16, 0, 16])
     ax.add_artist(circle)
     ax.add_artist(circle2)
-    orig, = plt.plot(points[:,0], points[:,1], c='y', label='original data')
+    orig = plt.scatter(points[:,0], points[:,1], c='y', s=4, label='original data')
     ax.legend(handles=[circle, circle2, orig])
     plt.show()
