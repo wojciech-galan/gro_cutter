@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from matplotlib import pyplot as plt
-def plot(points, initialx, initialy, initial_radius, x, y, radius): #TODO outfile
+
+
+def plot(points, initialx, initialy, initial_radius, x, y, radius, outpath):
     """
     Plots nanodisk boundaries before and after fitting a circle to the boundaries
     :param points: boundaries (protein) atoms
@@ -12,6 +14,7 @@ def plot(points, initialx, initialy, initial_radius, x, y, radius): #TODO outfil
     :param x: final coordinate of the middle of the circle
     :param y: final coordinate of the middle of the circle
     :param radius: final radius of the circle
+    :param outpath: output path
     :return:
     """
     circle = plt.Circle((x, y), radius, fill=False, edgecolor='r', label='after optimization')
@@ -22,4 +25,4 @@ def plot(points, initialx, initialy, initial_radius, x, y, radius): #TODO outfil
     ax.add_artist(circle2)
     orig = plt.scatter(points[:,0], points[:,1], c='y', s=4, label='original data')
     ax.legend(handles=[circle, circle2, orig])
-    plt.show()
+    plt.savefig(outpath)

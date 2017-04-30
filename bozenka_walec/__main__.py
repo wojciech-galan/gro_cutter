@@ -47,7 +47,7 @@ def main(args=sys.argv[1:]):
         initialy = np.mean(protein_atoms[:, 1])
         initial_radius = (math.fabs(initialx) + math.fabs(initialy) - np.min(protein_atoms[:, 0]) - np.min(protein_atoms[:, 1])) / 2
         x, y, r = determine_center_and_radius(np.array(protein_atoms), args.xtol, initialx, initialy, initial_radius)
-        plot.plot(protein_atoms, initialx, initialy, initial_radius, x, y, r)#, args.o)
+        plot.plot(protein_atoms, initialx, initialy, initial_radius, x, y, r, args.o)
     else:
         print "Num of cores:", 1 + args.processes
         if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
