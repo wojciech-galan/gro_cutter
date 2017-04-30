@@ -16,7 +16,8 @@ from walec import get_frames, DataFrame, process_frame_string, write_file, get_p
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser(description=common.package_description)
-    parser.add_argument('-f', '--figure', action='store_true', help='plots circle fitted to the first frame')
+    parser.add_argument('-f', '--figure', action='store_true', help='plots circle fitted to all protein atoms in \
+    the first frame')
     parser.add_argument('-i', required=True, help='input file')
     parser.add_argument('-o', required=True, help='output file')
     parser.add_argument('-s', '--solvent', default='TIP3', help='solvent')
