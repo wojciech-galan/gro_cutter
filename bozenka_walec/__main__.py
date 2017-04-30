@@ -5,11 +5,12 @@ import os
 import sys
 import argparse
 import multiprocessing
+import common
 from walec import get_frames, DataFrame, process_frame_string, write_file
 
 
 def main(args=sys.argv[1:]):
-    parser = argparse.ArgumentParser(description='todo')  # todo
+    parser = argparse.ArgumentParser(description=common.package_description)
     parser.add_argument('-i', required=True, help='input file')
     parser.add_argument('-o', required=True, help='output file')
     parser.add_argument('-s', '--solvent', default='TIP3', help='solvent')

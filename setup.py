@@ -1,12 +1,13 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
+from bozenka_walec import common
 from setuptools import setup, find_packages
 
 setup(
     name="viruses_classifier", #todo
     version='1.0.0',
-    description='Restrinct solvent in .gro file to the particles lying directly over and under a nanodisk',
+    description=common.package_description,
     url='https://github.com/wojciech-galan/viruses_classifier', #todo
     author='Wojciech Gałan',
     license='GNU GPL v3.0',
