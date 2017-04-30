@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 setup(
     name="viruses_classifier", #todo
     version='1.0.0',
-    description='Restrinct solvent in .gro file to particles lying directly over and under a nanodisk',
+    description='Restrinct solvent in .gro file to the particles lying directly over and under a nanodisk',
     url='https://github.com/wojciech-galan/viruses_classifier', #todo
     author='Wojciech Gałan',
     license='GNU GPL v3.0',
@@ -23,9 +23,8 @@ setup(
     ],
     entry_points = {
         'console_scripts':[
-            'viruses_classifier = viruses_classifier.__main__:main'
+            'viruses_classifier = bozenka_walec.__main__:main' #todo
         ]
 
-    },
-    include_package_data=True
+    }
 )
