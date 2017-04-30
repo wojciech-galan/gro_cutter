@@ -41,10 +41,7 @@ class DataFrame(object):
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
     def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, xtol, x, y, r):
-        if skip_hydrogens:
-            protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS and line[2].startswith('H')]
-        else:
-            protein_atoms = [(line[4], line[5]) for line in self.lines if line[1] in AMINOACIDS]
+        protein_atoms = get_protein_atoms(self.lines, skip_hydrogens)
         x, y, r = determine_center_and_radius(np.array(protein_atoms), xtol, x, y, r)
         center = (x, y)
         sqared_r = r**2
@@ -63,6 +60,13 @@ class DataFrame(object):
                 elif control:
                     output_lines.append(line)
         return output_lines, x, y, r
+
+
+def get_protein_atoms(lines, skip_hydrogens):
+    if skip_hydrogens:
+        return [(line[4], line[5]) for line in lines if line[1] in AMINOACIDS and line[2].startswith('H')]
+    else:
+        return [(line[4], line[5]) for line in lines if line[1] in AMINOACIDS]
 
 
 def write_file(first_line, lines, last_line, outfile):
