@@ -12,7 +12,8 @@ setup(
     author='Wojciech Gałan',
     license='GNU GPL v3.0',
     install_requires=[
-        'scipy'
+        'scipy',
+        'matplotlib'
     ],
     packages=find_packages(),
     classifiers=[
