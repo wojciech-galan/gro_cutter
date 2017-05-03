@@ -1,14 +1,14 @@
 #! /usr/bin/python
 # -*- coding: utf-8 -*-
 
-from bozenka_walec import common
+from gro_cutter import common
 from setuptools import setup, find_packages
 
 setup(
-    name="viruses_classifier", #todo
+    name="gro_cutter",
     version='1.0.0',
     description=common.package_description,
-    url='https://github.com/wojciech-galan/viruses_classifier', #todo
+    url='https://github.com/wojciech-galan/gro_cutter',
     author='Wojciech Gałan',
     license='GNU GPL v3.0',
     install_requires=[
@@ -24,7 +24,7 @@ setup(
     ],
     entry_points = {
         'console_scripts':[
-            'viruses_classifier = bozenka_walec.__main__:main' #todo
+            'gro_cutter = gro_cutter.__main__:main'
         ]
 
     }
