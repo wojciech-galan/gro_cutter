@@ -16,7 +16,7 @@ viruses_classifier requires:
 
 - Python = 2.7
 - SciPy >= 0.18.1
-- Matplotlib >= 2.0.0
+- Matplotlib >= 1.5
 
 
 User installation
