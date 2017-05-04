@@ -48,7 +48,7 @@ Multiprocessing mode (you supply the number of additional processes, meaningfull
 
     gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle -p 4
 
-Wish to change the main aton in solvent, which is used to determine the solvent particles' coordinates?
+Wish to change the main atom in solvent, which is used to determine the solvent particles' coordinates?
 
     gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle -m main_atom_in_solvent
 
