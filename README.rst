@@ -44,7 +44,7 @@ Simplest usage:
 
 Solvent particle defaults to TIP3 and lipid to POP3.
 
-Multiprocessing mode (you supply ne number of additional processes, meaningfull values are >=2):
+Multiprocessing mode (you supply the number of additional processes, meaningfull values are >=2):
 
     gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle -p 4
 
