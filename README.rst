@@ -2,7 +2,7 @@
 gro_cutter
 ====
 Cuts .gro files with molecular dynamics of a nanodisks. In each simulation frame fits a circle to the nanodisk
-boundaries (protein atoms). Then rewrites the file keeping solvent particles lying below and above the nanodisk,
+boundaries (protein atoms). Then rewrites the file keeping solvent particles lying below and above the nanodisk and
 discards the particles lying outside the nanodisk boundaries. Nanodisk in each simulation timestamp should lie in a
 vertical plane. Could be run in multiprocessing mode.
 
