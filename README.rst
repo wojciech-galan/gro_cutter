@@ -22,7 +22,7 @@ viruses_classifier requires:
 User installation
 ~~~~~~~~~~~~~~~~~
 
-If you already have a working installation of scipy, the easiest way to install viruses_classifier is using ``pip`` ::
+If you already have a working installation of scipy, the easiest way to install gro_cutter is using ``pip`` ::
 
     pip install -U git+https://github.com/wojciech-galan/gro_cutter.git
 
