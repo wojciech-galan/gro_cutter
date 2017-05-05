@@ -12,8 +12,9 @@ Installation
 Dependencies
 ~~~~~~~~~~~~
 
-viruses_classifier requires:
+gro_cutter requires:
 
+- Tkinter
 - Python = 2.7
 - SciPy >= 0.18.1
 - Matplotlib >= 1.5
