@@ -33,7 +33,7 @@ def plot(points, initialx, initialy, initial_radius, x, y, radius, outpath):
     ax.legend(handles=[circle, circle2, orig])
     splited_name = os.path.basename(outpath).split('.')
     if len(splited_name)>1 and splited_name[-1] not in FigureCanvasBase.get_supported_filetypes():
-        basename = '.'.join(splited_name[:-1])+'.jpg'
+        basename = '.'.join(splited_name[:-1])+'.pdf'
         outpath = os.path.join(os.path.dirname(outpath), basename)
         warnings.warn("Format not supported. Suported formats are: %s."%
                       ', '.join(FigureCanvasBase.get_supported_filetypes().keys()))
