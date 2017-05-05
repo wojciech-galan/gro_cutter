@@ -57,7 +57,7 @@ nanodisk boundaries:
 
     gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle --skip_hydrogens
 
-you can also fit a circle to the data less precisely, increasing xtol value:
+you can also fit a circle to the data less precisely, increasing xtol value (default 1e-8):
 
     gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle --xtol 1e-6
 
