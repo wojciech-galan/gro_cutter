@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 import warnings
 import matplotlib
 # Force matplotlib to not use any Xwindows backend.
@@ -35,7 +36,11 @@ def plot(points, initialx, initialy, initial_radius, x, y, radius, outpath):
     if len(splited_name)>1 and splited_name[-1] not in FigureCanvasBase.get_supported_filetypes():
         basename = '.'.join(splited_name[:-1])+'.pdf'
         outpath = os.path.join(os.path.dirname(outpath), basename)
-        warnings.warn("Format not supported. Suported formats are: %s."%
+        if sys.version_info[0]==2:
+            warnings.warn("Format not supported. Suported formats are: %s."%
                       ', '.join(FigureCanvasBase.get_supported_filetypes().keys()))
+        else:
+            warnings.warn("Format not supported. Suported formats are: %s." %
+                        ', '.join(list(FigureCanvasBase.get_supported_filetypes().keys())))
     plt.savefig(outpath)
     return outpath

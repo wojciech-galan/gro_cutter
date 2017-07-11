@@ -10,8 +10,9 @@ import numpy as np
 
 import common
 import plot
-from walec import get_frames, DataFrame, process_frame_string, write_file, get_protein_atoms, \
+from walec import get_frames, DataFrame, process_frame_string_wrapper, write_file, get_protein_atoms,\
     determine_center_and_radius
+
 
 
 def main(args=sys.argv[1:]):
@@ -49,7 +50,7 @@ def main(args=sys.argv[1:]):
         x, y, r = determine_center_and_radius(np.array(protein_atoms), args.xtol, initialx, initialy, initial_radius)
         outfile = plot.plot(protein_atoms, initialx, initialy, initial_radius, x, y, r, args.o)
     else:
-        print "Num of cores:", 1 + args.processes
+        print ("Num of cores:", 1 + args.processes)
         if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
             os.makedirs(os.path.dirname(args.o))
         open(args.o, 'w').close()  # create empty file
@@ -67,7 +68,7 @@ def main(args=sys.argv[1:]):
                     if n:
                         map_args.append((n, x, y, r, args.contain, args.solvent, args.main_atom_in_solvent,
                                          args.skip_hydrogens, args.xtol))
-                for data, lines, x, y, r in pool.map(process_frame_string, map_args):
+                for data, lines, x, y, r in pool.map(process_frame_string_wrapper, map_args):
                     write_file(data.first_line, lines, data.last_line, args.o)
 
             pool.close()
@@ -79,7 +80,7 @@ def main(args=sys.argv[1:]):
                                               args.xtol, x, y, r)
                 write_file(data.first_line, lines, data.last_line, args.o)
         outfile = args.o
-    print "Result written to", outfile
+    print ("Result written to", outfile)
 
 if __name__ == '__main__':
     main()

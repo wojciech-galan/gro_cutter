@@ -2,9 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import os
-import argparse
+import sys
 import struct
-import multiprocessing
 import numpy as np
 from computations import determine_center_and_radius
 from computations import squared_distance2d
@@ -28,11 +27,18 @@ class DataFrame(object):
         content, self.last_line = temp[-1].rsplit(os.linesep, 1)
 
         def process_line(line, line_format=GRO_FORMAT):
-            res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, line)
+            if sys.version_info[0]==2:
+                res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, line)
+            else:
+                res_num, res_name, atom_name, atom_num, x, y, z = struct.unpack(line_format, bytes(line, encoding='ASCII'))
             res_num = int(res_num)
             atom_num = int(atom_num)
-            res_name = res_name.rstrip()
-            atom_name = atom_name.lstrip()
+            if sys.version_info[0] == 2:
+                res_name = res_name.rstrip()
+                atom_name = atom_name.lstrip()
+            else:
+                res_name = res_name.rstrip().decode('ASCII')
+                atom_name = atom_name.lstrip().decode('ASCII')
             x = float(x)
             y = float(y)
             z = float(z)
@@ -52,7 +58,7 @@ class DataFrame(object):
                 output_lines.append(line)
             elif line[1] == solvent :
                 if line[2] == main_in_solvent:
-                    if squared_distance2d(center, (line[4], line[5])) <= sqared_r:
+                    if squared_distance2d(center[0], center[1], line[4], line[5]) <= sqared_r:
                         output_lines.append(line)
                         control = True
                     else:
@@ -127,10 +133,14 @@ def get_frames(fname, pattern=PATTERN, start=1):
                 yield s
 
 
-def process_frame_string((frame_string, x, y, r, contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol)):
+def process_frame_string(frame_string, x, y, r, contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol):
     data = DataFrame(frame_string)
     lines, x, y, r = data.process(contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol, x, y, r)
     return data, lines, x, y, r
+
+
+def process_frame_string_wrapper(a):
+    return process_frame_string(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8])
 
 if __name__ == '__main__':
     pass
