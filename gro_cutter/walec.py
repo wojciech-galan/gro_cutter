@@ -5,8 +5,13 @@ import os
 import sys
 import struct
 import numpy as np
-from computations import determine_center_and_radius
-from computations import squared_distance2d
+
+if sys.version_info[0] == 2:
+    from computations import determine_center_and_radius
+    from computations import squared_distance2d
+else:
+    from .computations import determine_center_and_radius
+    from .computations import squared_distance2d
 
 AMINOACIDS = set(['GLN', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN', 'VAL', 'THR',
              'TRP', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])

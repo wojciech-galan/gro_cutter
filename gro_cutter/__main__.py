@@ -9,10 +9,16 @@ import multiprocessing
 import math
 import numpy as np
 
-import common
-import plot
-from walec import get_frames, DataFrame, process_frame_string_wrapper, write_file, get_protein_atoms,\
-    determine_center_and_radius
+if sys.version_info[0] == 2:
+    import common
+    import plot
+    from walec import get_frames, DataFrame, process_frame_string_wrapper, write_file, get_protein_atoms,\
+        determine_center_and_radius
+else:
+    from . import common
+    from . import plot
+    from .walec import get_frames, DataFrame, process_frame_string_wrapper, write_file, get_protein_atoms, \
+        determine_center_and_radius
 
 
 def main(args=sys.argv[1:]):
