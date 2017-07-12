@@ -68,6 +68,10 @@ option and look at the output file:
     gro_cutter -i input_file -o output_file.jpg -s solvent_particle -c lipid_particle --xtol 1e-6 -f
 
 
+Platform compatibility
+--------
+gro_cutter was written and optimized under python2.7 and then ported to python3.5. Please let me know if you experience any problems under python3.
+
 Citation
 --------
 
