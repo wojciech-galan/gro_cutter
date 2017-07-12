@@ -42,5 +42,7 @@ def plot(points, initialx, initialy, initial_radius, x, y, radius, outpath):
         else:
             warnings.warn("Format not supported. Suported formats are: %s." %
                         ', '.join(list(FigureCanvasBase.get_supported_filetypes().keys())))
+    else:
+        outpath = outpath + '.pdf'
     plt.savefig(outpath)
     return outpath
