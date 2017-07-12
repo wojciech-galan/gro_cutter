@@ -15,7 +15,7 @@ Dependencies
 gro_cutter requires:
 
 - Tkinter
-- Python = 2.7
+- Python >= 2.7
 - SciPy >= 0.18.1
 - Matplotlib >= 1.5
 
