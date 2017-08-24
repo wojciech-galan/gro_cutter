@@ -51,9 +51,9 @@ class DataFrame(object):
 
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
-    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, xtol, x, y, r):
+    def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, xtol, x, y, r, shrink):
         protein_atoms = get_protein_atoms(self.lines, skip_hydrogens)
-        x, y, r = determine_center_and_radius(np.array(protein_atoms), xtol, x, y, r)
+        x, y, r = determine_center_and_radius(np.array(protein_atoms), xtol, x, y, r, shrink)
         center = (x, y)
         sqared_r = r**2
         output_lines = []
@@ -145,7 +145,7 @@ def process_frame_string(frame_string, x, y, r, contain, solvent, main_atom_in_s
 
 
 def process_frame_string_wrapper(a):
-    return process_frame_string(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8])
+    return process_frame_string(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9])
 
 if __name__ == '__main__':
     pass

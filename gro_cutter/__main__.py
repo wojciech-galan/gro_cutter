@@ -40,6 +40,9 @@ def main(args=sys.argv[1:]):
                             to complete the computations.')
     parser.add_argument('-p', '--processes', default=0, type=int, help="Number of additional cores used for \
                             computations. Values >=2 and <=num_of_available_cores are reasonable")
+    parser.add_argument('--shrink', default=False, action='store_true',
+                        help="whether to shrink the circle radius to the distance between the circle center and the \
+                        closest protein atom")
     args = parser.parse_args(args)
 
     if os.path.dirname(args.o) and not os.path.exists(os.path.dirname(args.o)):
@@ -53,7 +56,8 @@ def main(args=sys.argv[1:]):
         initialx = np.mean(protein_atoms[:, 0])
         initialy = np.mean(protein_atoms[:, 1])
         initial_radius = (math.fabs(initialx) + math.fabs(initialy) - np.min(protein_atoms[:, 0]) - np.min(protein_atoms[:, 1])) / 2
-        x, y, r = determine_center_and_radius(np.array(protein_atoms), args.xtol, initialx, initialy, initial_radius)
+        x, y, r = determine_center_and_radius(np.array(protein_atoms), args.xtol, initialx, initialy, initial_radius, \
+                                              args.shrink)
         outfile = plot.plot(protein_atoms, initialx, initialy, initial_radius, x, y, r, args.o)
     else:
         print ("Num of cores:", 1 + args.processes)
@@ -73,7 +77,7 @@ def main(args=sys.argv[1:]):
                     n = next(iterator, False)
                     if n:
                         map_args.append((n, x, y, r, args.contain, args.solvent, args.main_atom_in_solvent,
-                                         args.skip_hydrogens, args.xtol))
+                                         args.skip_hydrogens, args.xtol, args.shrink))
                 for data, lines, x, y, r in pool.map(process_frame_string_wrapper, map_args):
                     write_file(data.first_line, lines, data.last_line, args.o)
 
@@ -83,7 +87,7 @@ def main(args=sys.argv[1:]):
             for frame in get_frames(args.i):
                 data = DataFrame(frame)
                 lines, x, y, r = data.process(args.contain, args.solvent, args.main_atom_in_solvent, args.skip_hydrogens,
-                                              args.xtol, x, y, r)
+                                              args.xtol, x, y, r, args.shrink)
                 write_file(data.first_line, lines, data.last_line, args.o)
         outfile = args.o
     print ("Result written to", outfile)
