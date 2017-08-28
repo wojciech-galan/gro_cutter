@@ -138,9 +138,9 @@ def get_frames(fname, pattern=PATTERN, start=1):
                 yield s
 
 
-def process_frame_string(frame_string, x, y, r, contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol):
+def process_frame_string(frame_string, x, y, r, contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol, shrink):
     data = DataFrame(frame_string)
-    lines, x, y, r = data.process(contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol, x, y, r)
+    lines, x, y, r = data.process(contain, solvent, main_atom_in_solvent, skip_hydrogens, xtol, x, y, r, shrink)
     return data, lines, x, y, r
 
 
