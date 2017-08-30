@@ -53,6 +53,10 @@ Wish to change the main atom in solvent, which is used to determine the solvent 
 
     gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle -m main_atom_in_solvent
 
+You can shrink the circle to contain only lipid particles (shrinking the radius to the distance between center of the circle and the closest protein atom:
+
+    gro_cutter -i input_file -o output_file -s solvent_particle -c lipid_particle --shrink
+
 Program runs too slow? You can run it in multiprocessing mode or skip hydrogens in protein particles while determining
 nanodisk boundaries:
 
