@@ -32,7 +32,7 @@ def main(args=sys.argv[1:]):
                         help="coordinates of this atom are used as particle's coordinates")
     parser.add_argument('--skip_hydrogens', default=False, action='store_true',
                         help='whether to use hydrogens to determine the midddle of the circle and its radius')
-    parser.add_argument('-c', '--contain', default='POPC',
+    parser.add_argument('-c', '--contain', default=['POPC'], nargs='*',
                         help='''particles to be contained in the output file without changes.
                             AminoAcids are always rewriten to the output file''')
     parser.add_argument('--xtol', default=1e-8, type=float, help='xtol parameter of the scipy.optimize.least_squares \

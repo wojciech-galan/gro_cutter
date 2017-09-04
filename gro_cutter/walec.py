@@ -52,6 +52,7 @@ class DataFrame(object):
         self.lines = [process_line(x) for x in content.split(os.linesep)]
 
     def process(self, to_contain, solvent, main_in_solvent, skip_hydrogens, xtol, x, y, r, shrink):
+        to_contain = set(to_contain) # originally a list
         protein_atoms = get_protein_atoms(self.lines, skip_hydrogens)
         x, y, r = determine_center_and_radius(np.array(protein_atoms), xtol, x, y, r, shrink)
         center = (x, y)
@@ -59,7 +60,7 @@ class DataFrame(object):
         output_lines = []
         control = False
         for line in self.lines:
-            if line[1] == to_contain or line[1] in AMINOACIDS:
+            if line[1] in to_contain or line[1] in AMINOACIDS:
                 output_lines.append(line)
             elif line[1] == solvent :
                 if line[2] == main_in_solvent:
