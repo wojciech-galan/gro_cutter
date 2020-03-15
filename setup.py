@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gro_cutter",
-    version='1.1.0',
+    version='1.1.1',
     description=common.package_description,
     url='https://github.com/wojciech-galan/gro_cutter',
     author='Wojciech Gałan',

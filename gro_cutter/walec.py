@@ -17,7 +17,7 @@ AMINOACIDS = set(['GLN', 'GLY', 'GLU', 'ASP', 'SER', 'HSD', 'LYS', 'PRO', 'ASN',
              'TRP', 'PHE', 'ALA', 'MET', 'LEU', 'ARG', 'TYR'])
 GRO_FORMAT = "5s5s5s5s8s8s8s"
 GRO_FORMAT_C = "%5d%-5s%5s%5d%8.3f%8.3f%8.3f"
-PATTERN = 'Generated'
+PATTERN = 'Title'
 
 # TODO
 # najpierw wczytywanie już istniejącego pliku wynikowego, żeby zobaczyć, co zostało policzone, a potem dopisywanie do niego
